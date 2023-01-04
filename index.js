@@ -29,6 +29,15 @@ const typeDefs = gql`
         location_id: ID!
         user_id: ID!
     }   
+    input UpdateEventInput {
+        title: String
+        desc: String
+        date: String
+        from: String
+        to: String
+        location_id: ID
+        user_id: ID
+    }   
     
     # location
     type Location {
@@ -44,6 +53,12 @@ const typeDefs = gql`
         lat: Float!
         lng: Float!
     }
+    input UpdateLocationInput {
+        name: String
+        desc: String
+        lat: Float
+        lng: Float
+    }
 
     # user
     type User {
@@ -54,6 +69,10 @@ const typeDefs = gql`
     input CreateUserInput {
         username: String!
         email: String!
+    }
+    input UpdateUserInput {
+        username: String
+        email: String
     }
 
     # participant
@@ -66,6 +85,10 @@ const typeDefs = gql`
     input CreateParticipantInput {
         user_id: ID!
         event_id: ID!
+    } 
+    input UpdateParticipantInput {
+        user_id: ID
+        event_id: ID
     }   
     
 
@@ -90,15 +113,19 @@ const typeDefs = gql`
     type Mutation {
         # user
         createUser(data: CreateUserInput!): User!
+        updateUser(id: ID!, data: UpdateUserInput!): User!
         
         # location
         createLocation(data: CreateLocationInput!): Location!
+        updateLocation(id: ID!, data: UpdateLocationInput!): Location!
         
         # participant
         createParticipant(data: CreateParticipantInput!): Participant!
+        updateParticipant(id: ID!, data: UpdateParticipantInput!): Participant!
         
         # event
-    createEvent(data: CreateEventInput!): Event!
+        createEvent(data: CreateEventInput!): Event!
+        updateEvent(id: ID!, data: UpdateEventInput!): Event!
     }
 `;
 
@@ -113,6 +140,17 @@ const resolvers = {
             users.push(user)
             return user
         },
+        updateUser: (parent, {id, data}) => {
+            const user_index = users.findIndex((user) => user.id === id)
+            if (user_index === -1){
+                throw new Error("User not Found")
+            }
+            const updated_user = (users[user_index] = {
+                ...users[user_index],
+                ...data
+            })
+            return updated_user
+        },
 
         // location
         createLocation: (parent, {data}) => {
@@ -122,6 +160,17 @@ const resolvers = {
             }
             locations.push(location)
             return location
+        },
+        updateLocation: (parent, {id, data}) => {
+            const location_index = locations.findIndex((location) => location.id === id)
+            if (location_index === -1){
+                throw new Error("Location not Found")
+            }
+            const updated_location = (locations[location_index] = {
+                ...locations[location_index],
+                ...data
+            })
+            return updated_location
         },
 
         // participant
@@ -133,6 +182,17 @@ const resolvers = {
             participants.push(participant)
             return participant
         },
+        updateParticipant: (parent, {id, data}) => {
+            const participant_index = participants.findIndex((participant) => participant.id === id)
+            if (participant_index === -1){
+                throw new Error("Participant not Found")
+            }
+            const updated_participant = (participants[participant_index] = {
+                ...participants[participant_index],
+                ...data
+            })
+            return updated_participant
+        },
 
         // event
         createEvent: (parent, {data}) => {
@@ -142,6 +202,17 @@ const resolvers = {
             }
             events.push(event)
             return event
+        },
+        updateEvent: (parent, {id, data}) => {
+            const event_index = events.findIndex((event) => event.id === id)
+            if (event_index === -1){
+                throw new Error("Event not Found")
+            }
+            const updated_event = (events[event_index] = {
+                ...events[event_index],
+                ...data
+            })
+            return updated_event
         },
     },
 
