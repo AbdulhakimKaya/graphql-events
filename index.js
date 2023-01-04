@@ -92,6 +92,10 @@ const typeDefs = gql`
     }   
     
 
+    type DeleteAllOutput {
+        count: Int!
+    }
+    
     type Query {
         # user
         users: [User!]!
@@ -114,18 +118,26 @@ const typeDefs = gql`
         # user
         createUser(data: CreateUserInput!): User!
         updateUser(id: ID!, data: UpdateUserInput!): User!
+        deleteUser(id: ID!): User!
+        deleteAllUser: DeleteAllOutput!
         
         # location
         createLocation(data: CreateLocationInput!): Location!
         updateLocation(id: ID!, data: UpdateLocationInput!): Location!
+        deleteLocation(id: ID!): Location!
+        deleteAllLocation: DeleteAllOutput!
         
         # participant
         createParticipant(data: CreateParticipantInput!): Participant!
         updateParticipant(id: ID!, data: UpdateParticipantInput!): Participant!
+        deleteParticipant(id: ID!): Participant!
+        deleteAllParticipant: DeleteAllOutput!
         
         # event
         createEvent(data: CreateEventInput!): Event!
         updateEvent(id: ID!, data: UpdateEventInput!): Event!
+        deleteEvent(id: ID!): Event!
+        deleteAllEvent: DeleteAllOutput!
     }
 `;
 
@@ -151,6 +163,20 @@ const resolvers = {
             })
             return updated_user
         },
+        deleteUser: (parent, {id}) => {
+            const user_index = users.findIndex((user) => user.id === id)
+            if (user_index === -1){
+                throw new Error("User not Found")
+            }
+            const deleted_user = users[user_index]
+            users.splice(user_index, 1)
+            return deleted_user
+        },
+        deleteAllUser: () => {
+            const length = users.length
+            users.splice(0, length)
+            return {count: length}
+        },
 
         // location
         createLocation: (parent, {data}) => {
@@ -171,6 +197,20 @@ const resolvers = {
                 ...data
             })
             return updated_location
+        },
+        deleteLocation: (parent, {id}) => {
+            const location_index = locations.findIndex((location) => location.id === id)
+            if (location_index === -1){
+                throw new Error("Location not Found")
+            }
+            const deleted_location = locations[location_index]
+            locations.splice(location_index, 1)
+            return deleted_location
+        },
+        deleteAllLocation: () => {
+            const length = locations.length
+            locations.splice(0, length)
+            return {count: length}
         },
 
         // participant
@@ -193,6 +233,20 @@ const resolvers = {
             })
             return updated_participant
         },
+        deleteParticipant: (parent, {id}) => {
+            const participant_index = participants.findIndex((participant) => participant.id === id)
+            if (participant_index === -1){
+                throw new Error("Participant not Found")
+            }
+            const deleted_participant = participants[participant_index]
+            participants.splice(participant_index, 1)
+            return deleted_participant
+        },
+        deleteAllParticipant: () => {
+            const length = participants.length
+            participants.splice(0, length)
+            return {count: length}
+        },
 
         // event
         createEvent: (parent, {data}) => {
@@ -214,6 +268,20 @@ const resolvers = {
             })
             return updated_event
         },
+        deleteEvent: (parent, {id}) => {
+            const event_index = events.findIndex((event) => event.id === id)
+            if (event_index === -1){
+                throw new Error("Event not Found")
+            }
+            const deleted_event = events[event_index]
+            events.splice(event_index, 1)
+            return deleted_event
+        },
+        deleteAllEvent: () => {
+            const length = events.length
+            events.splice(0, length)
+            return {count: length}
+        }
     },
 
     Query: {
